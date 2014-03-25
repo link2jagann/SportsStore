@@ -5,10 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using SportsStore.Domain.Entities;
 
-namespace SportsStore.WebUI.Abstract
+namespace SportsStore.Domain.Abstract
 {
-    interface IProductsRepository
+    public interface IOrderProcessor
     {
-        IEnumerable<Product> Products { get; }
+        void ProcessOrder(Cart cart, ShippingDetails shippingDetails);
     }
 }

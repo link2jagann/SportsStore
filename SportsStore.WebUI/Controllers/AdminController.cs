@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -66,6 +67,45 @@ namespace SportsStore.WebUI.Controllers
                 deletedProduct.Name);
             }
             return RedirectToAction("Index");
+        }
+
+        public ActionResult UploadImage()
+        {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult UploadImage(HttpPostedFileBase file)
+        {
+            if(ModelState.IsValid)
+            {
+                if (file == null)
+                {
+                    ModelState.AddModelError("File", "Please Upload your file");
+                }
+                else if(file.ContentLength > 0)
+                {
+                    int MaxContentLength = 1024 * 1024 * 3; // 3MB
+                    string[] AllowedFileExtensions = new string[] { ".jpg", ".gif", ".png", ".pdf" };
+
+                    if(!AllowedFileExtensions.Contains(file.FileName.Substring(file.FileName.LastIndexOf('.'))))
+                    {
+                        ModelState.AddModelError("File", "Please file of type:" + string.Join(", ", AllowedFileExtensions));
+                    }
+                    else if(file.ContentLength > MaxContentLength)
+                    {
+                        ModelState.AddModelError("File", "Your file is too large, maximun allowed size is:" + MaxContentLength + "MB");
+                    }
+                    else
+                    {
+                        var fileName = Path.GetFileName(file.FileName);
+                        var path = Path.Combine(Server.MapPath("~/Content/Upload"), fileName);
+                        file.SaveAs(path);
+                        ModelState.Clear();
+                        ViewBag.Message = "File uploaded successfully";
+                    }
+                }
+            }
+            return View();
         }
 	}
 }
